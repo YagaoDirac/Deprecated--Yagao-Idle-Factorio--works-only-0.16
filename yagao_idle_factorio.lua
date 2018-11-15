@@ -15,6 +15,18 @@ math.clamp = function(a,min,max)
     return math.min(math.max(a,min),max)
 end
 
+--my math utils. Would be collected in a table later
+yagao_math={}
+yagao_math.point_on_line = function(x1,y1,x2,y2,x)
+    --safety
+    if math.abs(x1-x2)<0.0000001 then 
+        return nil
+    end
+
+    local k = (y2-y1)/(x2-x1)
+    return (x-x1)*k+y1
+end
+
 
 --我把我自己的名字写到代码里，你们不会有意见吧？如果你们要hack我的地图，直接跟我说，我帮你们写都行。我希望可以有良性的交流。
 --严格的说写这个地图也是为了探讨一些玩法设计的具体细节。这次的思路是将放置类游戏的元素加入到工厂里，在不增加游戏任何内容的情况下，让游戏变得更耐玩
@@ -138,7 +150,7 @@ end
 
     
 local function set_map_tiles_for_new_round()
-    local length = global.map_size_info.border_width --for short
+    local width = global.map_size_info.border_width --for short
 
 
     --all the api doesn't work at all with corpse. Reason is still unknown.
@@ -169,8 +181,8 @@ local function set_map_tiles_for_new_round()
 
     --set tiles
     tiles = {}
-    for x = 0,300+2*length do
-        for y = -300-2*length,300 do
+    for x = 0,300+2*width do
+        for y = -300-2*width,300 do
             table.insert(tiles,{name = "out-of-map",position = {x= x,y =y}})
         end
     end
@@ -185,11 +197,11 @@ local function set_map_tiles_for_new_round()
     end
     game.surfaces[1].set_tiles(tiles)
     for k,v in pairs(game.players) do
-        v.teleport(25-v.position.x,-25-v.position.y)
+        v.teleport(width/3-v.position.x,-width/3-v.position.y)
     end
     local tile_name ="grass-1"
-    for x = -length*2,4*length do
-      for y = -4*length,length*2 do
+    for x = -width*2,4*width do
+      for y = -4*width,width*2 do
         y = -y
         tile_name ="grass-1"
 
@@ -197,14 +209,14 @@ local function set_map_tiles_for_new_round()
         if x<0 or y<0 then 
           tile_name = "out-of-map"
         end 
-        if x>length+length or y > length+length then 
+        if x>width+width or y > width+width then 
           tile_name = "out-of-map"
         end 
         -- get rid of left top and right bottom
-        if y>length  and y>x+length * 0.3 then 
+        if y>width  and y>x+width * 0.3 then 
           tile_name = "out-of-map"
         end 
-        if x>length and y<x-length*0.3 then 
+        if x>width and y<x-width*0.3 then 
           tile_name = "out-of-map"
         end 
         
@@ -520,12 +532,12 @@ local function set_team_powerup()
 
 
     t = math.sqrt(s)*10
-    t = math.clamp(t+20,20,400)
-    p1 = -0.58*s+1.19 -- the line go through points with coord of 30,1 and 200,0
+    t = math.clamp(t+8,8,400)
+    p1 = yagao_math.point_on_line(30,1,200,0,s) -- the line go through points with coord of 30,1 and 200,0
     --我是用了一个直线的方程，这个方程通过两个点，坐标如上
     p1 = math.clamp(p1,0,1)
     p2 = -0.001*s + 1.1 -- 100,1  1100,0
-    p2 = math.clamp(p2,0,1)
+    p2 = math.clamp(p2,0,1-p1)
     p3 = math.clamp(1- p1-p2 ,0,1)
     starting_items["transport-belt"] =         math.floor(t * p1)
     starting_items["fast-transport-belt"] =    math.floor(t * p2)
@@ -585,7 +597,7 @@ local function set_team_powerup()
     starting_items["accumulator"] =  math.floor(t)
 
     t = math.sqrt(s)*0.1
-    t = math.clamp(t,0,20)
+    t = math.clamp(t+2,2,20)
     p1 = -0.001*s + 1.1 -- 100,1  1100,0
     p1 = math.clamp(p1,0,1)
     p2 = math.clamp(1- p1 ,0,1)
@@ -601,7 +613,7 @@ local function set_team_powerup()
     p1 = -1*(s/2000) + 1.25 -- 500,1  2500,0
     p1 = math.clamp(p1,0,1)
     p2 = -1*(s/5000) + 1.3  --1500,1 6500,0
-    p2 = math.clamp(p2,0,1)
+    p2 = math.clamp(p2,0,1-p1)
     p3 = math.clamp(1- p1-p2 ,0,1)
     starting_items["stone-furnace"]    = math.floor(t*p1)
     starting_items["steel-furnace"]    = math.floor(t*p2)
@@ -612,7 +624,7 @@ local function set_team_powerup()
     p1 = -1*(s/2000) + 1.25 -- 500,1  2500,0
     p1 = math.clamp(p1,0,1)
     p2 = -1*(s/5000) + 1.3  --1500,1 6500,0
-    p2 = math.clamp(p2,0,1)
+    p2 = math.clamp(p2,0,1-p1)
     p3 = math.clamp(1- p1-p2 ,0,1)
     starting_items["assembling-machine-1"] =  math.floor(t*p1)
     starting_items["assembling-machine-2"] =  math.floor(t*p2)
@@ -633,7 +645,7 @@ local function set_team_powerup()
     p1 = -1*(s/20000) + 1.25 -- 5000,1  25000,0
     p1 = math.clamp(p1,0,1)
     p2 = -1*(s/200000) + 1.25  --50000,1  250000,0
-    p2 = math.clamp(p2,0,1)
+    p2 = math.clamp(p2,0,1-p1)
     p3 = math.clamp(1- p1-p2 ,0,1)
     starting_items["speed-module"]   = math.floor(t*p1)
     starting_items["speed-module-2"] = math.floor(t*p2)
@@ -710,7 +722,7 @@ local function set_team_powerup()
     p1 = -1*(s/20000) + 1.25 -- 5000,1  25000,0
     p1 = math.clamp(p1,0,1)
     p2 = -1*(s/50000) + 2  --50000,1  100000,0
-    p2 = math.clamp(p2,0,1)
+    p2 = math.clamp(p2,0,1-p1)
     p3 = math.clamp(1- p1-p2 ,0,1)
 
     starting_items["firearm-magazine"]        = math.floor(t*p1)
@@ -763,27 +775,33 @@ local function set_team_powerup()
     t = math.clamp(t,0,10)
     starting_items["flamethrower-turret"] = math.floor(t)
 
-    -- if you are connected ,you loot from starting a new round is cumulated. If you are off line ,you only have the lastest loot.
-    for _,player in pairs(game.players)do
-        local is_connected = false
-        for _,connected_player in pairs(game.connected_players)do
-            if connected_player == player then
-                is_connected = true 
-                break
-            end
+    --for all with a count 0, remove it from table
+    for k,v in pairs(starting_items) do
+        if v == 0 then 
+          starting_items[k] = nil
         end
-        if true == is_connected then
+    end
+
+    for _,player in pairs(game.players)do
+        if player.connected == true then
             for item_name,item_count in pairs(starting_items) do
-                if not global.player_item_track[item_name] then
-                    global.player_item_track[item_name] = starting_items[item_name]
+                --safety
+                if not global.player_item_track[player.index] then
+                    global.player_item_track[player.index] ={}
+                end
+
+                if not global.player_item_track[player.index][item_name] then
+                    global.player_item_track[player.index][item_name] = starting_items[item_name]
                 else
-                    global.player_item_track[item_name] = global.player_item_track[item_name]+starting_items[item_name]
+                    global.player_item_track[player.index][item_name] = 
+                        global.player_item_track[player.index][item_name]+starting_items[item_name]
                 end
             end
         else
-            global.player_item_track = starting_items
+            --disconnected players only have latest loot
+            global.player_item_track[player.index][item_name] = global.player_item_track[player.index][item_name]
         end
-    end
+      end
 
 
 
@@ -1622,22 +1640,32 @@ yagao_idle_factorio.on_tick = function()
 
 
 
-        for _,player in pairs(game.connected_players) do
-            if  player.character then
-                if global.player_item_track[player.index] then
-                    local still_have_loot = false
-                    for item_name,item_count in (global.player_item_track[player.index]) do
-                        item_count = item_count - player.insert{name = item_name,count = item_count}
-                        if true == still_have_loot  then
-                            break
+        for _,player in pairs(game.connected_players) do     
+            if player.character then      
+                if player.character.valid then
+                    if not global.player_item_track[player.index] then
+                        global.player_item_track[player.index] ={}
+                    else
+                        local still_have_loot = false
+                        --give items to players in this for loop
+                        for item_name,item_count in pairs(global.player_item_track[player.index]) do
+                            global.player_item_track[player.index][item_name] = item_count - player.insert{name = item_name,count = item_count}
+                            if global.player_item_track[player.index][item_name]>0 then
+                                still_have_loot = true
+                                break
+                            else
+                                global.player_item_track[player.index][item_name] = nil
+                            end
+                        end
+                        if true == still_have_loot then
+                            global.player_still_have_loot[player.index] = true
+                        else 
+                            global.player_still_have_loot[player.index] = false
                         end
                     end
-                    if true == still_have_loot then
-                        global.player_still_have_loot[player.index] = true
-                    end
-                end
-            end
-        end    
+                end    
+            end    
+        end   
             
 
 
@@ -1678,11 +1706,11 @@ end
 
 yagao_idle_factorio.on_player_created = function (event)
     local player = game.players[event.player_index]
-    player.insert{name="iron-plate", count=50}
+    -- player.insert{name="iron-plate", count=50}
     player.insert{name="pistol", count=1}--手枪
     player.insert{name="firearm-magazine", count=30}--黄子弹
-    player.insert{name="burner-mining-drill", count = 5}--热力矿机
-    player.insert{name="stone-furnace", count = 3}--石炉
+    -- player.insert{name="burner-mining-drill", count = 5}--热力矿机
+    -- player.insert{name="stone-furnace", count = 3}--石炉
     player.force.chart(player.surface, {{player.position.x - 50, player.position.y - 50}, {player.position.x + 50, player.position.y + 50}})
 
 
@@ -1706,7 +1734,9 @@ yagao_idle_factorio.on_player_respawned = function (event)
     player.insert{name="pistol", count=1}
     player.insert{name="firearm-magazine", count=10}
 
-    player.teleport(25-player.position.x,-25-player.position.y)--because the built-in force:set_spawn_position doesn't work at all.
+    local width = global.map_size_info.border_width
+
+    player.teleport(width/3-player.position.x,-width/3-player.position.y)--because the built-in force:set_spawn_position doesn't work at all.
 end
 
 
@@ -1741,7 +1771,7 @@ yagao_idle_factorio.on_built_entity =function (event)
 
         log(pos)
         entity.die(game.forces["enemy"])
-        game.print("In this ver I don't know how to deal with radar, so plz don't use it now.")
+        game.print({"In this ver I don't know how to deal with radar, so plz don't use it now."})
         game.surfaces[1].spill_item_stack(pos, {name = "iron-plate",count = 10}, true)
         game.surfaces[1].spill_item_stack(pos, {name = "iron-gear-wheel",count = 5}, true)
         game.surfaces[1].spill_item_stack(pos, {name = "electronic-circuit",count = 5}, true)
