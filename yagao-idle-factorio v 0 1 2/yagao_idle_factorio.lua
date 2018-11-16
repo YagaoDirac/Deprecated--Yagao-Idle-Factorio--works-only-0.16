@@ -294,7 +294,7 @@ local function init_resource_for_this_round()
 
     local crude_oil_spring_count =0
     for x = one_eighth + 4 , one_fourths , 9 do
-        for y = 0,one_eighth , 9 do
+        for y = 1,one_eighth , 9 do
             crude_oil_spring_count = crude_oil_spring_count+1
         end
     end
@@ -304,7 +304,7 @@ local function init_resource_for_this_round()
 
     if crude_oil_amount_for_each>1 then
         for x = one_eighth + 4 , one_fourths , 9 do
-            for y = 0,one_eighth , 9 do
+            for y = 1,one_eighth , 9 do
                 surface.create_entity{name="crude-oil",amount = crude_oil_amount_for_each , position = {x,-y}}
                 surface.create_entity{name="crude-oil",amount = crude_oil_amount_for_each , position = {y,-x}}
             end

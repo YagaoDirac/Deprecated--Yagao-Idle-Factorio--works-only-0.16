@@ -1,0 +1,9 @@
+0.1.1
+Fix some bug
+Slightly modify some starting items
+写bug
+稍微修改一下起始物品
+
+0.1.2
+Crude oil is no longer generated on the very edge. Means you are able to utilize every crude oil.
+原油生成位置修正，不再在地图的最最边缘的位置，保证你可以利用每一个原油。

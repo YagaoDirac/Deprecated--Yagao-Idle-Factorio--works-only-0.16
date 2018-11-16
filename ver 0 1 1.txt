@@ -1,5 +1,0 @@
-0.1.1
-Fix some bug
-Slightly modify some starting items
-写bug
-稍微修改一下起始物品
