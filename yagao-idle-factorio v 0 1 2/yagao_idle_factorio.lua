@@ -1421,12 +1421,30 @@ local function round_start()
             global.player_valid_time[v.index] = game.tick -36000 
     end
 
+    if global.time_to_start_first_round == false then
+        for _,player in pairs(game.connected_players) do
+            if not global.player_item_track[player.index] then
+                global.player_item_track[player.index] = {}
+            end
+            if not global.player_item_track[player.index]["firearm-magazine"] then
+                global.player_item_track[player.index]["firearm-magazine"] = 15
+            else
+                if global.player_item_track[player.index]["firearm-magazine"]< 15 then
+                    global.player_item_track[player.index]["firearm-magazine"] = 15
+                end
+            end
+        end
+    end
 
+    
     if global.time_to_start_first_round == true then
         global.time_to_start_first_round = false
     end
 
     global.round_info.already_won_this_round = false
+
+
+
 
     -- --respawn all dead dudes. May have bug
     -- for _,player in pairs(game.connected_players)do

@@ -6,4 +6,6 @@ Slightly modify some starting items
 
 0.1.2
 Crude oil is no longer generated on the very edge. Means you are able to utilize every crude oil.
+Increaced init firearm magazine for new round.
 原油生成位置修正，不再在地图的最最边缘的位置，保证你可以利用每一个原油。
+回合初始子弹稍微增加。
