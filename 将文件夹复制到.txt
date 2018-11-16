@@ -1,0 +1,7 @@
+Windows 用户
+
+C:\Users\**your user name here**\AppData\Roaming\Factorio\scenarios\yagao-idle-factorio v 0 ? ?
+
+分数文件在
+
+C:\Users\**your user name here**\AppData\Roaming\Factorio\script-output

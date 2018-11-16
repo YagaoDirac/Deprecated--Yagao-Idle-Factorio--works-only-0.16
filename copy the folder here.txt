@@ -1,0 +1,7 @@
+for Windows
+
+C:\Users\**your user name here**\AppData\Roaming\Factorio\scenarios\yagao-idle-factorio v 0 ? ?
+
+And your score file is in
+
+C:\Users\**your user name here**\AppData\Roaming\Factorio\script-output
